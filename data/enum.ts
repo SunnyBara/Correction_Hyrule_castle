@@ -1,0 +1,31 @@
+// export enum Classe {
+//   Hero = 1,
+//   Warrior = 2,
+//   Mage = 3,
+//   Dark_Mage = 4,
+//   Assassin = 5,
+//   Priest = 6,
+//   Monk = 7,
+//   Death_Knight = 8,
+//   Necromancer = 9,
+// }
+
+// export enum Race {
+//   Hylian = 1,
+//   Sheikah = 2,
+//   Gerudo = 3,
+//   Zora = 4,
+//   Goron = 5,
+//   Kokiri = 6,
+//   Twili = 7,
+//   Minish = 8,
+//   Humain = 9,
+//   Reptilian = 10,
+//   Avian = 11,
+//   Monster = 12,
+//   Demon = 13,
+//   Divine = 14,
+//   Undead = 15,
+//   Insect = 16,
+//   Machine = 17,
+// }
