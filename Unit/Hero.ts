@@ -24,13 +24,13 @@ export class GameManager {
     this.trashesList = [];
     this.Display = new DisplayManager(this.tower);
   }
-  async Hyrule_castle() {
+  public async Hyrule_castle() {
     this.initGame();
     await this.game();
     this.end();
   }
 
-  public async initGame() {
+  private async initGame() {
     this.initList();
     this.initHero();
   }
@@ -50,23 +50,50 @@ export class GameManager {
     return jsonList;
   }
 
-  readParseJson(path: string) {
+  private readParseJson(path: string) {
     const filecontent = fs.readFileSync(path);
     return JSON.parse(filecontent);
   }
 
-  private sortByRarity(list: EntityInterface[]) {
-    list.sort((element1, element2) => {
-      return element1.rarity - element2.rarity;
-    });
-  }
   private initHero() {
     const hero: EntityInterface = this.setRandomHero();
     this.heroes.push(new Hero(hero));
   }
+  private initOpponent() {
+    if (this.tower.current_Floor % 10 == 0) {
+      const Boss: EntityInterface = this.setRandomBoss();
+      return new Entity(Boss);
+    }
+    const Trash: EntityInterface = this.setRandomTrash();
+    return new Entity(Trash);
+  }
+
   private setRandomHero() {
     const rarity = this.getRarity();
     return this.heroesList[rarity];
+  }
+
+  private setRandomTrash() {
+    const rarity = this.getRarity();
+    const trashByRarity: EntityInterface[] = [];
+    for (const trash of this.trashesList) {
+      if (trash.rarity == rarity) {
+        trashByRarity.push(trash);
+      }
+    }
+    const index = Math.ceil(Math.random() * trashByRarity.length - 1);
+    return trashByRarity[index];
+  }
+  private setRandomBoss() {
+    const rarity = this.getRarity();
+    const bossByRarity: EntityInterface[] = [];
+    for (const boss of this.bossList) {
+      if (boss.rarity == rarity) {
+        bossByRarity.push(boss);
+      }
+    }
+    const index = Math.ceil(Math.random() * bossByRarity.length - 1);
+    return bossByRarity[index];
   }
   private getRarity() {
     const random = Math.ceil(Math.random() * 100);
@@ -84,6 +111,12 @@ export class GameManager {
     }
     return rarity;
   }
+  private sortByRarity(list: EntityInterface[]) {
+    list.sort((element1, element2) => {
+      return element1.rarity - element2.rarity;
+    });
+  }
+
   private async game() {
     while (
       this.tower.current_Floor <= this.tower.Floor_max &&
@@ -93,50 +126,23 @@ export class GameManager {
       this.Display.setOpponent(opponent);
       this.Display.setHeroes(this.heroes);
       const figth = new Fight(this.Display);
-      console.log(`============FLOOR ${this.tower.current_Floor}=============`);
-
       await figth.letsFight(this.heroes, opponent);
       this.tower.nextFloor();
     }
   }
 
-  initOpponent() {
-    if (this.tower.current_Floor % 10 == 0) {
-      const Boss: EntityInterface = this.setRandomBoss();
-      return new Entity(Boss);
-    }
-    const Trash: EntityInterface = this.setRandomTrash();
-    return new Entity(Trash);
-  }
-  private setRandomTrash() {
-    const rarity = this.getRarity();
-    const trashByRarity = [];
-    for (const trash of this.trashesList) {
-      if (trash.rarity == rarity) {
-        trashByRarity.push(trash);
-      }
-    }
-    const index = Math.ceil(Math.random() * trashByRarity.length - 1);
-    return this.trashesList[index];
-  }
-  private setRandomBoss() {
-    const rarity = this.getRarity();
-    const bossByRarity = [];
-    for (const boss of this.bossList) {
-      if (boss.rarity == rarity) {
-        bossByRarity.push(boss);
-      }
-    }
-    const index = Math.ceil(Math.random() * bossByRarity.length - 1);
-    return this.bossList[index];
-  }
-  end() {
+  private end() {
     if (this.heroes.length == 0) {
       this.Display.gameOver();
+    } else {
+      console.log("j'ai rien prévue quand tu gagnes rip");
     }
   }
 }
 export class Hero extends Entity {
+  str = 150;
+  Hp = 900;
+  HpMax = 900;
   constructor(entity: EntityInterface) {
     super(entity);
   }

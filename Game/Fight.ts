@@ -1,3 +1,4 @@
+import { Console, log } from "console";
 import Color from "../Display/Color";
 import DisplayManager from "../Display/DisplayManager";
 import Entity from "../Unit/Entity";
@@ -11,12 +12,14 @@ export default class Fight {
   private figthers: Entity[];
   private fighter?: Entity;
   private target?: Entity;
+  private Playing: Boolean;
   private Display: DisplayManager;
   constructor(Display: DisplayManager) {
     this.Heroes = [];
     this.Opponents = [];
     this.figthers = [];
     this.Display = Display;
+    this.Playing = true;
   }
   async letsFight(Hero: Hero[], Opponent: Entity[]) {
     this.initFigthers(Hero, Opponent);
@@ -36,27 +39,29 @@ export default class Fight {
   }
 
   async figth() {
-    console.clear();
-    this.Display.displayAll(this.Display.formateDisplay());
-    for (const figther of this.figthers) {
-      if (this.Heroes.length > 0 && this.Opponents.length > 0) {
-        this.fighter = figther;
-        if (figther instanceof Hero) {
-          await this.playerTurn();
-        } else {
-          await this.opponentTurn();
+    if (this.Playing) {
+      console.clear();
+      this.Display.displayAll(this.Display.formateDisplay());
+      for (const figther of this.figthers) {
+        if (this.Heroes.length > 0 && this.Opponents.length > 0) {
+          this.fighter = figther;
+          if (figther instanceof Hero) {
+            await this.playerTurn();
+          } else {
+            await this.opponentTurn();
+          }
         }
       }
-    }
-    if (this.Heroes.length > 0 && this.Opponents.length > 0) {
-      await this.figth();
+      if (this.Heroes.length > 0 && this.Opponents.length > 0) {
+        await this.figth();
+      }
     }
     return;
   }
 
   async playerTurn() {
     const choice = await User.getUserInputFromList(
-      ["Attack", "Heal"],
+      ["Attack", "Heal", "Quit"],
       "Choose your action",
       "Action"
     );
@@ -75,6 +80,9 @@ export default class Fight {
         await this.chooseTargetFromList(this.Heroes);
         if (this.target instanceof Hero) DamageOrHeal = -this.target.heal();
         break;
+      case "Quit":
+        this.wipeAllTeam();
+        return;
     }
     let combatLog = this.writeDownCombatLog(DamageOrHeal);
     if (this.target) {
@@ -164,12 +172,11 @@ export default class Fight {
     }
   }
 
-  displayEffect() {
-    for (const fighter of this.figthers)
-      console.log(fighter.name + " " + fighter.Hp);
-  }
   setTarget(target: Entity | Hero) {
     this.target = target;
     return;
+  }
+  wipeAllTeam() {
+    this.Heroes.splice(0, this.Heroes.length);
   }
 }

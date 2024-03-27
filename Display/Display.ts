@@ -7,7 +7,7 @@ export default class Display {
   public static sizeOfHealthBar: number = 40;
   public Heroes: Hero[];
   public Opponents: Entity[];
-  public spaceBetweenNameAndBar = 13;
+  public spaceBetweenNameAndBar = 18;
   public spaceBetweenBarandHealth = 7;
   constructor() {
     this.Heroes = [];
