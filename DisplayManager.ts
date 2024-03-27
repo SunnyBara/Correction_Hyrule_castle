@@ -1,18 +1,31 @@
+import Tower from "../Tower";
 import Display from "./Display";
 import Entity from "./Entity";
-import Hero from "./Hero";
+import { Hero } from "./Hero";
 
 export default class DisplayManager extends Display {
+  public combatLog: string;
+  public tower: Tower;
+  constructor(tower: Tower) {
+    super();
+    this.combatLog = "";
+    this.tower = tower;
+  }
+
   async displayEffect(Entity: Entity | Hero, damage: number) {
     await this.updateLife(Entity, damage);
   }
 
   public async updateLife(Entity: Entity | Hero, damage: number) {
+    let damageOrHeal = damage < 0 ? -1 : 1;
+    if (Entity.Hp == Entity.HpMax && damageOrHeal == -1) {
+      damageOrHeal = 0;
+    }
     await new Promise((resolve) => {
       const initial_Hp = Entity.Hp;
       const timer = setInterval(
         function (this: DisplayManager) {
-          Entity.Hp--;
+          Entity.Hp -= damageOrHeal;
           let lifeFull = "█".repeat(
             Math.round((Entity.Hp / Entity.HpMax) * Display.sizeOfHealthBar)
           );
@@ -20,7 +33,11 @@ export default class DisplayManager extends Display {
           Entity.healthBar.bar = lifeFull + lifeEmpty;
           console.clear();
           this.displayAll(this.formateDisplay());
-          if (Entity.Hp == initial_Hp - damage) {
+          if (
+            Entity.Hp == initial_Hp - damage ||
+            Entity.Hp == 0 ||
+            Entity.Hp == Entity.HpMax
+          ) {
             clearInterval(timer);
             resolve(0);
           }
@@ -53,11 +70,16 @@ export default class DisplayManager extends Display {
     }
     return formatedDisplay;
   }
-
+  setCombatLog(combatLog: string) {
+    this.combatLog = combatLog;
+    return;
+  }
   public displayAll(formatedDisplay: String[]) {
+    console.log(`CURRENT FLOOR ${this.tower.current_Floor}\n`);
     for (const log of formatedDisplay) {
       console.log(log);
     }
+    console.log(this.combatLog);
     return;
   }
 }

@@ -1,5 +1,6 @@
 import Entity from "./Entity";
-import Hero from "./Hero";
+import { Hero } from "./Hero";
+
 import { inquirer } from "./lib";
 
 export default class User {

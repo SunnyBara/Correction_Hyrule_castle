@@ -1,44 +1,54 @@
+import Color from "./Color";
+import DisplayManager from "./DisplayManager";
 import Entity from "./Entity";
-import Hero from "./Hero";
+import { Hero } from "./Hero";
+
 import User from "./User";
 
 export default class Fight {
-  public Hero: Hero[];
-  public Opponent: Entity[];
+  public Heroes: Hero[];
+  public Opponents: Entity[];
   private figthers: Entity[];
   private fighter?: Entity;
   private target?: Entity;
-  constructor() {
-    this.Hero = [];
-    this.Opponent = [];
+  private Display: DisplayManager;
+  constructor(Display: DisplayManager) {
+    this.Heroes = [];
+    this.Opponents = [];
     this.figthers = [];
+    this.Display = Display;
   }
-  async letsFight(Hero: Hero[], Opponent: Entity) {
+  async letsFight(Hero: Hero[], Opponent: Entity[]) {
     this.initFigthers(Hero, Opponent);
     await this.figth();
   }
 
-  initFigthers(Hero: Hero[], Opponent: Entity) {
-    this.Hero = Hero;
-    this.figthers.push(Hero[0]);
-    this.Opponent.push(Opponent);
-    this.figthers.push(Opponent);
+  initFigthers(Heroes: Hero[], Opponents: Entity[]) {
+    this.Heroes = Heroes;
+    for (const hero of this.Heroes) {
+      this.figthers.push(hero);
+    }
+    for (const opponent of Opponents) {
+      this.Opponents.push(opponent);
+      this.figthers.push(opponent);
+    }
     return;
   }
 
   async figth() {
-    console.log("DEBUT DU ROUND");
+    console.clear();
+    this.Display.displayAll(this.Display.formateDisplay());
     for (const figther of this.figthers) {
-      if (this.Hero.length > 0 && this.Opponent.length > 0) {
+      if (this.Heroes.length > 0 && this.Opponents.length > 0) {
         this.fighter = figther;
         if (figther instanceof Hero) {
           await this.playerTurn();
         } else {
-          this.opponentTurn();
+          await this.opponentTurn();
         }
       }
     }
-    if (this.Hero.length > 0 && this.Opponent.length > 0) {
+    if (this.Heroes.length > 0 && this.Opponents.length > 0) {
       await this.figth();
     }
     return;
@@ -51,23 +61,61 @@ export default class Fight {
       "Action"
     );
     await this.procedeAction(choice.Action);
-    this.displayEffect();
     return;
   }
 
   async procedeAction(choice: string) {
+    let DamageOrHeal = 0;
     switch (choice) {
       case "Attack":
-        await this.chooseTargetFromList(this.Opponent);
-        if (this.target && this.fighter) this.target.Damaged(this.fighter.str);
-        this.isTargetAlive();
+        await this.chooseTargetFromList(this.Opponents);
+        if (this.fighter) DamageOrHeal = this.fighter?.str;
         break;
       case "Heal":
-        await this.chooseTargetFromList(this.Hero);
-        if (this.target instanceof Hero) this.target.heal();
+        await this.chooseTargetFromList(this.Heroes);
+        if (this.target instanceof Hero) DamageOrHeal = -this.target.heal();
         break;
     }
+    let combatLog = this.writeDownCombatLog(DamageOrHeal);
+    if (this.target) {
+      this.Display.setCombatLog(combatLog);
+      await this.Display.displayEffect(this.target, DamageOrHeal);
+      await this.timeOutToEnjoyDisplay();
+    }
+    this.isTargetAlive();
     return;
+  }
+
+  async timeOutToEnjoyDisplay() {
+    await new Promise((resolve) => {
+      setTimeout(resolve, 500);
+    });
+  }
+
+  writeDownCombatLog(DamageOrHeal: number) {
+    let combatLog = "";
+    if (DamageOrHeal <= 0 && this.fighter && this.target) {
+      combatLog += `${Color.colorName(this.fighter)}`;
+      combatLog +=
+        this.fighter == this.target
+          ? ` Heal himslef for `
+          : `Heal ${Color.colorName(this.target)} for `;
+      combatLog +=
+        this.target.Hp - DamageOrHeal > this.target.HpMax
+          ? `${this.target.HpMax - this.target.Hp}`
+          : `${-DamageOrHeal}`;
+      combatLog += `Hp!`;
+    } else if (this.target && this.fighter) {
+      combatLog += `${Color.colorName(this.fighter)} hit ${Color.colorName(
+        this.target
+      )} for `;
+      combatLog +=
+        this.target.Hp - DamageOrHeal > 0
+          ? `${DamageOrHeal}`
+          : `${this.target.Hp}`;
+      combatLog += ` Damages.`;
+    }
+    return combatLog;
   }
 
   async chooseTargetFromList(list: Entity[] | Hero[]) {
@@ -79,11 +127,14 @@ export default class Fight {
     this.setTarget(choice.Target.Object);
   }
 
-  opponentTurn() {
-    this.getRandomElementFromList(this.Hero);
-    if (this.target && this.fighter) this.target.Damaged(this.fighter.str);
+  async opponentTurn() {
+    this.getRandomElementFromList(this.Heroes);
+    if (this.target && this.fighter) {
+      let combatLog = this.writeDownCombatLog(this.fighter.str);
+      this.Display.setCombatLog(combatLog);
+      await this.Display.displayEffect(this.target, this.fighter.str);
+    }
     this.isTargetAlive();
-    this.displayEffect();
     return;
   }
 
@@ -107,9 +158,9 @@ export default class Fight {
   }
   removeDeadFromTeamList() {
     if (this.target instanceof Hero) {
-      this.Hero.splice(this.Hero.indexOf(this.target), 1);
+      this.Heroes.splice(this.Heroes.indexOf(this.target), 1);
     } else if (this.target) {
-      this.Opponent.splice(this.Opponent.indexOf(this.target), 1);
+      this.Opponents.splice(this.Opponents.indexOf(this.target), 1);
     }
   }
 

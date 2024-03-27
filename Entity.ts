@@ -1,7 +1,6 @@
 import Display from "./Display";
 import { EntityInterface } from "./EntityInterface";
 import HealthBar from "./HealthBar";
-import Hero from "./Hero";
 
 export default class Entity implements EntityInterface {
   public name: string;

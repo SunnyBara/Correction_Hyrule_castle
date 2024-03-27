@@ -1,16 +1,17 @@
+import { displayBigZelda, displayGameOver } from "./Ascii";
 import Color from "./Color";
 import Entity from "./Entity";
-import Hero from "./Hero";
+import { Hero } from "./Hero";
 
 export default class Display {
   public static sizeOfHealthBar: number = 40;
-  public Heroes;
-  public Opponents;
+  public Heroes: Hero[];
+  public Opponents: Entity[];
   public spaceBetweenNameAndBar = 13;
   public spaceBetweenBarandHealth = 7;
-  constructor(Heroes: Hero[], Opponents: Entity[]) {
-    this.Heroes = Heroes;
-    this.Opponents = Opponents;
+  constructor() {
+    this.Heroes = [];
+    this.Opponents = [];
   }
 
   public static initHpBar(entity: Entity | Hero) {
@@ -68,5 +69,19 @@ export default class Display {
     log += this.formateHeroBar(Hero);
     log += "\n";
     return log;
+  }
+
+  public setHeroes(heroes: Hero[]) {
+    this.Heroes = heroes;
+    return;
+  }
+  public setOpponent(opponent: Entity[]) {
+    this.Opponents = opponent;
+  }
+
+  public gameOver() {
+    console.clear();
+    displayBigZelda();
+    displayGameOver();
   }
 }

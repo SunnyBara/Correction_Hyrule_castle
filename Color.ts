@@ -1,5 +1,5 @@
 import Entity from "./Entity";
-import Hero from "./Hero";
+import { Hero } from "./Hero";
 
 export default class Color {
   static colorHeroBar(Entity: Entity | Hero) {
@@ -23,6 +23,16 @@ export default class Color {
       color = `\u001b[34m${Entity.healthBar.bar}\u001b[0m`; // Blue
     } else {
       color = `\u001b[35m${Entity.healthBar.bar}\u001b[0m`; // Magenta
+    }
+    return color;
+  }
+
+  static colorName(Entity: Entity | Hero) {
+    let color = "";
+    if (Entity instanceof Hero) {
+      color = `\u001b[32m${Entity.name}\u001b[0m`; //Green
+    } else {
+      color = `\u001b[31m${Entity.name}\u001b[0m`; // Red
     }
     return color;
   }
