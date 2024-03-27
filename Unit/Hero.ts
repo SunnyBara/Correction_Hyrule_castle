@@ -1,8 +1,8 @@
-import DisplayManager from "./DisplayManager";
+import DisplayManager from "../Display/DisplayManager";
 import Entity from "./Entity";
 import { EntityInterface } from "./EntityInterface";
-import Fight from "./Fight";
-import Tower from "./Tower";
+import Fight from "../Game/Fight";
+import Tower from "../Tower/Tower";
 const fs = require("fs");
 
 export class GameManager {
@@ -110,12 +110,25 @@ export class GameManager {
   }
   private setRandomTrash() {
     const rarity = this.getRarity();
-    return this.trashesList[rarity];
+    const trashByRarity = [];
+    for (const trash of this.trashesList) {
+      if (trash.rarity == rarity) {
+        trashByRarity.push(trash);
+      }
+    }
+    const index = Math.ceil(Math.random() * trashByRarity.length - 1);
+    return this.trashesList[index];
   }
   private setRandomBoss() {
     const rarity = this.getRarity();
-
-    return this.bossList[rarity];
+    const bossByRarity = [];
+    for (const boss of this.bossList) {
+      if (boss.rarity == rarity) {
+        bossByRarity.push(boss);
+      }
+    }
+    const index = Math.ceil(Math.random() * bossByRarity.length - 1);
+    return this.bossList[index];
   }
   end() {
     if (this.heroes.length == 0) {

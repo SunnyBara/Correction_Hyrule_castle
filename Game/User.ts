@@ -1,7 +1,7 @@
-import Entity from "./Entity";
-import { Hero } from "./Hero";
+import Entity from "../Unit/Entity";
+import { Hero } from "../Unit/Hero";
 
-import { inquirer } from "./lib";
+import { inquirer } from "../data/lib";
 
 export default class User {
   static async getUserInputFromList(

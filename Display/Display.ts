@@ -1,7 +1,7 @@
 import { displayBigZelda, displayGameOver } from "./Ascii";
 import Color from "./Color";
-import Entity from "./Entity";
-import { Hero } from "./Hero";
+import Entity from "../Unit/Entity";
+import { Hero } from "../Unit/Hero";
 
 export default class Display {
   public static sizeOfHealthBar: number = 40;

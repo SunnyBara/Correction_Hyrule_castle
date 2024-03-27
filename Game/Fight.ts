@@ -1,7 +1,7 @@
-import Color from "./Color";
-import DisplayManager from "./DisplayManager";
-import Entity from "./Entity";
-import { Hero } from "./Hero";
+import Color from "../Display/Color";
+import DisplayManager from "../Display/DisplayManager";
+import Entity from "../Unit/Entity";
+import { Hero } from "../Unit/Hero";
 
 import User from "./User";
 

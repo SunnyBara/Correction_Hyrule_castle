@@ -1,5 +1,5 @@
-import Entity from "./Entity";
-import { Hero } from "./Hero";
+import Entity from "../Unit/Entity";
+import { Hero } from "../Unit/Hero";
 
 export default class Color {
   static colorHeroBar(Entity: Entity | Hero) {

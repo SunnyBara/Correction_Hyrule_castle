@@ -1,7 +1,7 @@
-import Tower from "../Tower";
+import Tower from "../Tower/Tower";
 import Display from "./Display";
-import Entity from "./Entity";
-import { Hero } from "./Hero";
+import Entity from "../Unit/Entity";
+import { Hero } from "../Unit/Hero";
 
 export default class DisplayManager extends Display {
   public combatLog: string;
@@ -79,7 +79,7 @@ export default class DisplayManager extends Display {
     for (const log of formatedDisplay) {
       console.log(log);
     }
-    console.log(this.combatLog);
+    console.log(this.combatLog + "\n");
     return;
   }
 }

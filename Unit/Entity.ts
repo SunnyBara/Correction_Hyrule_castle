@@ -1,4 +1,4 @@
-import Display from "./Display";
+import Display from "../Display/Display";
 import { EntityInterface } from "./EntityInterface";
 import HealthBar from "./HealthBar";
 
